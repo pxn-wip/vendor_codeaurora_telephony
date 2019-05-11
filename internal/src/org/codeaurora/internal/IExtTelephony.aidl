@@ -297,6 +297,15 @@ interface IExtTelephony {
     Token queryNrSignalStrength(int slotId, in Client client);
 
     // Async api
+    Token queryUpperLayerIndInfo(int slotId, in Client client);
+
+    // Async api
+    Token query5gConfigInfo(int slotId, in Client client);
+
+    // Async api
+    Token queryNrIconType(int slotId, in Client client);
+
+    // Async api
     Client registerCallback(String packageName, INetworkCallback callback);
 
     // Async api
