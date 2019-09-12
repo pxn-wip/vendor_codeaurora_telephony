@@ -48,12 +48,13 @@ import java.util.Map;
 
 public class QtiCarrierConfigHelper {
     static final String TAG  = QtiCarrierConfigHelper.class.getSimpleName();
-    private static int PHONE_COUNT = TelephonyManager.getDefault().getPhoneCount();
+    private static int PHONE_COUNT;
     private Context mContext;
     SubscriptionManager mSubscriptionManager;
     CarrierConfigManager mCarrierConfigManager;
     Map<Integer, PersistableBundle> mConfigsMap = new ConcurrentHashMap<>();
     private AtomicBoolean mInitialized = new AtomicBoolean(false);
+    private int[] subCache;
 
     private static class SingletonHolder {
         public final static QtiCarrierConfigHelper sInstance = new QtiCarrierConfigHelper();
@@ -69,7 +70,7 @@ public class QtiCarrierConfigHelper {
                 if (mSubscriptionManager != null) {
                     SubscriptionInfo subInfo = mSubscriptionManager
                             .getActiveSubscriptionInfoForSimSlotIndex(phoneId);
-                    if (subInfo != null && mSubscriptionManager.isActiveSubId(
+                    if (subInfo != null && mSubscriptionManager.isActiveSubscriptionId(
                             subInfo.getSubscriptionId())) {
                         Log.d(TAG, "Reload carrier configs on phone Id: " + phoneId
                                 + " sub Id: " + subInfo.getSubscriptionId());
@@ -88,7 +89,6 @@ public class QtiCarrierConfigHelper {
 
     private class QtiCarrierConfigHelperOnSubscriptionsChangedListener
             extends SubscriptionManager.OnSubscriptionsChangedListener {
-        private int[] subCache = new int[PHONE_COUNT];
 
         @Override
         public void onSubscriptionsChanged() {
@@ -125,6 +125,8 @@ public class QtiCarrierConfigHelper {
         mContext = context.getApplicationContext();
         if (mContext != null) {
             mInitialized.set(true);
+            PHONE_COUNT = ((TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE)).
+                getPhoneCount();
             mSubscriptionManager = (SubscriptionManager) mContext
                 .getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
             mCarrierConfigManager = (CarrierConfigManager) mContext.getSystemService(
@@ -137,6 +139,7 @@ public class QtiCarrierConfigHelper {
                     loadConfigsForSubInfo(subInfo);
                 }
             }
+            subCache = new int[PHONE_COUNT];
             IntentFilter filter = new IntentFilter(CarrierConfigManager
                     .ACTION_CARRIER_CONFIG_CHANGED);
             mContext.registerReceiver(mReceiver, filter);
@@ -145,6 +148,10 @@ public class QtiCarrierConfigHelper {
     }
 
     public void teardown() {
+        if (!mInitialized.get()) {
+            Log.i(TAG, "WARNING, Don't set up yet or already tear down.");
+            return;
+        }
         mConfigsMap.clear();
         mInitialized.set(false);
         if (mContext != null) {

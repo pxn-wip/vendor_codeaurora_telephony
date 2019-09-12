@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2015-2017, 2019 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -28,8 +28,10 @@
 
 package org.codeaurora.ims.internal;
 
+import android.os.Bundle;
 import org.codeaurora.ims.internal.IQtiImsExtListener;
 import org.codeaurora.ims.internal.IImsMultiIdentityInterface;
+import org.codeaurora.ims.internal.IImsScreenShareController;
 
 /**
  * Interface through which APP and vendor communicates.
@@ -78,28 +80,6 @@ interface IQtiImsExt {
      */
     oneway void getCallForwardUncondTimer(int phoneId, int reason, int serviceClass,
             IQtiImsExtListener listener);
-
-    /**
-      * Total number of packets sent or received
-      *
-      * @param phoneId indicates the phone instance which triggered the request
-      * @param listener, provided if caller needs to be notified for get result.
-      * @return void
-      *
-      * @throws RemoteException if calling the IMS service results in an error.
-      */
-    oneway void getPacketCount(int phoneId, IQtiImsExtListener listener);
-
-   /**
-     * Total number of packet errors encountered
-     *
-     * @param phoneId indicates the phone instance which triggered the request
-     * @param listener, provided if caller needs to be notified for get result.
-     * @return void
-     *
-     * @throws RemoteException if calling the IMS service results in an error.
-     */
-    oneway void getPacketErrorCount(int phoneId, IQtiImsExtListener listener);
 
    /**
      * sendCallTransferRequest
@@ -268,4 +248,41 @@ interface IQtiImsExt {
     * Returns the IImsMultiIdentityInterface IBinder
     */
     IImsMultiIdentityInterface getMultiIdentityInterface(int phoneId);
+
+   /**
+    * Returns the IImsScreenShareInterface IBinder
+    */
+    IImsScreenShareController getScreenShareController(int phoneId);
+
+   /**
+     * getImsFeatureState
+     * Get current IMS feature state.
+     *
+     * @param phoneId indicates the phone instance which triggered the request
+     * @return int is one of the values of #ImsState defined in android.telephony.ims.feature.
+     *
+     * @throws RemoteException if calling the IMS service results in an error.
+     */
+    int getImsFeatureState(int phoneId);
+
+   /**
+    * setAnswerExtras
+    *
+    *
+    * @param phoneId indicates the phone instance which triggered the request
+    * @param extras Bundle containing additional information for answer request
+    *
+    * @throws RemoteException if calling the IMS service results in an error.
+    */
+    oneway void setAnswerExtras(int phoneId, in Bundle extras);
+
+   /**
+     * setUssdInfoListener
+     * Set USSD info listener.
+     *
+     * @param phoneId indicates the phone instance which triggered the request
+     * @param listener an IQtiImsExtListener instance to indicate the response
+     * @return void
+     */
+    oneway void setUssdInfoListener(int phoneId, IQtiImsExtListener listener);
 }

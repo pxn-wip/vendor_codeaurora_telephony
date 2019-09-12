@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2019 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -28,37 +28,31 @@
 
 package org.codeaurora.ims;
 
-import android.content.Context;
-import android.os.IBinder;
 import android.os.RemoteException;
-import org.codeaurora.ims.internal.IImsMultiIdentityInterface;
-import org.codeaurora.ims.internal.IImsMultiIdentityListener;
+import org.codeaurora.ims.internal.IImsScreenShareController;
+import org.codeaurora.ims.internal.IImsScreenShareListener;
 import android.util.Log;
-import java.util.ArrayList;
 
-public class ImsMultiIdentityManager {
-    private static final String LOG_TAG = "ImsMultiIdentityManager";
+public class ImsScreenShareManager {
+    private static final String LOG_TAG = "ImsScreenShareManager";
 
-    public final static int REGISTRATION_RESPONSE_FAILURE = 0;
-    public final static int REGISTRATION_RESPONSE_SUCCESS = 1;
-
-    private QtiImsExtManager  mQtiImsExtMgr;
-    private volatile IImsMultiIdentityInterface mInterface;
+    private QtiImsExtManager mQtiImsExtMgr;
+    private volatile IImsScreenShareController mInterface;
     private int mPhoneId;
 
-    ImsMultiIdentityManager(int phoneId, QtiImsExtManager imsExtMgr) {
+    ImsScreenShareManager(int phoneId, QtiImsExtManager imsExtMgr) {
         mPhoneId = phoneId;
         mQtiImsExtMgr = imsExtMgr;
         mQtiImsExtMgr.addCleanupListener(()->{mInterface = null;});
     }
 
-    private IImsMultiIdentityInterface getMultiIdentityInterface() throws QtiImsException{
-        IImsMultiIdentityInterface intf = mInterface;
+    private IImsScreenShareController getBinder() throws QtiImsException{
+        IImsScreenShareController intf = mInterface;
         if (intf != null) {
             return intf;
         }
         mQtiImsExtMgr.validateInvariants(mPhoneId);
-        intf = mQtiImsExtMgr.getMultiIdentityInterface(mPhoneId);
+        intf = mQtiImsExtMgr.getScreenShareController(mPhoneId);
         if (intf == null) {
             Log.e(LOG_TAG, "mInterface is NULL");
             throw new QtiImsException("Remote Interface is NULL");
@@ -67,50 +61,52 @@ public class ImsMultiIdentityManager {
         return intf;
     }
 
-    public void setMultiIdentityListener(ImsMultiIdentityListenerBase listener)
+    /**
+     * Used by client to set listener for screen share
+     * in vendor. Current implementation doesn't allow
+     * to set the listener as null and lower layer
+     * would overwrite the previous listener if this
+     * API is invoked again.
+     */
+    public void setScreenShareListener(ImsScreenShareListenerBase listener)
             throws QtiImsException{
+        mQtiImsExtMgr.validateInvariants(mPhoneId);
         if (listener == null) {
-            String msg = "setMultiIdentityListener :: listener is NULL";
-            Log.e(LOG_TAG, msg);
-            throw new QtiImsException(msg);
+            Log.e(LOG_TAG, "listener is NULL");
+            throw new QtiImsException("Listener is NULL");
         }
-        mQtiImsExtMgr.validateInvariants(mPhoneId);
         try {
-            getMultiIdentityInterface().setMultiIdentityListener(listener.getListener());
+            getBinder().setScreenShareListener(listener.getBinder());
         }
         catch (RemoteException e) {
-            throw new QtiImsException("Remote ImsService setMultiIdentityListener : " + e);
+            throw new QtiImsException("Remote ImsService setScreenShareListener : " + e);
         }
     }
 
-    public void updateRegistrationStatus(
-            ArrayList<MultiIdentityLineInfo> linesInfo) throws QtiImsException{
-        if (linesInfo == null) {
-            String msg = "updateRegistrationStatus :: linesInfo is NULL";
-            Log.e(LOG_TAG, msg);
-            throw new QtiImsException(msg);
-        }
+    /**
+     * Used by client to start screen share with display width and
+     * height.
+     */
+    public void startScreenShare(int width, int height) throws QtiImsException{
         mQtiImsExtMgr.validateInvariants(mPhoneId);
         try {
-            getMultiIdentityInterface().updateRegistrationStatus(linesInfo);
+            getBinder().startScreenShare(width, height);
         }
         catch (RemoteException e) {
-            throw new QtiImsException("Remote ImsService updateRegistrationStatus : " + e);
+            throw new QtiImsException("Remote ImsService startScreenShare : " + e);
         }
     }
 
-    public void queryVirtualLineInfo(String msisdn) throws QtiImsException{
-        if (msisdn == null || msisdn.isEmpty()) {
-            String msg = "queryVirtualLineInfo :: invalid msisdn";
-            Log.e(LOG_TAG, msg);
-            throw new QtiImsException(msg);
-        }
+    /**
+     * Used by client to stop screen share.
+     */
+    public void stopScreenShare() throws QtiImsException{
         mQtiImsExtMgr.validateInvariants(mPhoneId);
         try {
-            getMultiIdentityInterface().queryVirtualLineInfo(msisdn);
+            getBinder().stopScreenShare();
         }
         catch (RemoteException e) {
-            throw new QtiImsException("Remote ImsService queryVirtualLineInfo : " + e);
+            throw new QtiImsException("Remote ImsService stopScreenShare : " + e);
         }
     }
 }

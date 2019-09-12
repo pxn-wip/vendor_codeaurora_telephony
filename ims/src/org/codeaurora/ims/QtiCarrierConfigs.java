@@ -92,10 +92,6 @@ public class QtiCarrierConfigs {
     /* Config to control the voWiFi call quality indication. */
     public static final String VOWIFI_CALL_QUALITY = "vowifi_call_quality";
 
-    /* Config to determine if Carrier supports RTT
-       true - enabled, false - disabled */
-    public static final String KEY_CARRIER_RTT_SUPPORTED = "carrier_rtt_supported";
-
     /* Config to determine if Carrier supports RTT auto upgrade
        true - enabled, false - disabled */
     public static final String KEY_CARRIER_RTT_AUTO_UPGRADE = "carrier_rtt_auto_upgrade";
@@ -115,6 +111,12 @@ public class QtiCarrierConfigs {
      */
     public static final String KEY_CARRIER_RTT_DOWNGRADE_SUPPORTED =
             "carrier_rtt_downgrade_supported";
+
+    /* Config to determine if Carrier supports RTT Visibility Setting
+     * true - if supported else false
+     */
+    public static final String KEY_SHOW_RTT_VISIBILITY_SETTING =
+            "show_rtt_visibility_setting_bool";
 
     /* Config to determine if carrier supports holding a video call
      * true - if carrier supports holding a video call else false

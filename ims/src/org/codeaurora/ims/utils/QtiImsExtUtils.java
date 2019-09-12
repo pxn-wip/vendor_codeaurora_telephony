@@ -56,7 +56,7 @@ import org.codeaurora.ims.QtiImsExtManager;
  */
 public class QtiImsExtUtils {
 
-    private static String LOG_TAG = "QtiImsExtUtils";
+    private static final String LOG_TAG = "QtiImsExtUtils";
 
     public static final String QTI_IMS_CALL_DEFLECT_NUMBER =
             "ims_call_deflect_number";
@@ -75,6 +75,9 @@ public class QtiImsExtUtils {
 
     public static final String QTI_IMS_STATIC_IMAGE_SETTING =
             "ims_vt_call_static_image";
+
+    /* name for call transfer setting */
+    private static final String IMS_CALL_TRANSFER_SETTING = "ims_call_transfer";
 
     /**
      * Definitions for the call transfer type. For easier implementation,
@@ -110,6 +113,8 @@ public class QtiImsExtUtils {
      */
     public static final String EXTRA_SSAC = "Ssac";
 
+    public static final String SUBSCRIPTION_ID = "subId";
+
     /**
      * Definitions for the volte preference values.
      */
@@ -141,6 +146,16 @@ public class QtiImsExtUtils {
     public static final int QTI_IMS_VVM_APP_INVALID = -1;
     public static final int QTI_IMS_VVM_APP_NOT_RCS = 0;
     public static final int QTI_IMS_VVM_APP_RCS = 1;
+
+    /*TIR mode extra key */
+    public static final String EXTRA_TIR_OVERWRITE_ALLOWED = "incomingTir";
+    /*TIR presentation params */
+    /*TIR presentation extra key */
+    public static final String EXTRA_ANSWER_OPTION_TIR_CONFIG = "tirConfig";
+    public static final int QTI_IMS_TIR_PRESENTATION_UNRESTRICTED = 0;
+    public static final int QTI_IMS_TIR_PRESENTATION_RESTRICTED = 1;
+    public static final int QTI_IMS_TIR_PRESENTATION_DEFAULT = 2;
+
 
     /**
      * Private constructor for QtiImsExtUtils as we don't want to instantiate this class
@@ -375,7 +390,8 @@ public class QtiImsExtUtils {
      * Returns true if enabled, or false otherwise.
      */
     public static boolean isCallTransferEnabled(Context context) {
-        return SystemProperties.getBoolean("persist.vendor.radio.ims_call_transfer", false);
+        return Settings.Global.getInt(context.getContentResolver(), IMS_CALL_TRANSFER_SETTING, 0)
+                == 1;
     }
 
    /**
@@ -492,7 +508,7 @@ public class QtiImsExtUtils {
     /**
      * Returns subscription id for given phone id.
      */
-    private static int getSubscriptionIdFromPhoneId(Context context, int phoneId) {
+    public static int getSubscriptionIdFromPhoneId(Context context, int phoneId) {
         SubscriptionManager subscriptionManager = SubscriptionManager.from(context);
         if (subscriptionManager == null) {
             return subscriptionManager.INVALID_SUBSCRIPTION_ID;
@@ -509,7 +525,11 @@ public class QtiImsExtUtils {
     // Returns true if global setting has stored value as true
     public static boolean isRttOn(Context context) {
         return (getRttMode(context) !=  QtiCallConstants.RTT_MODE_DISABLED);
+    }
 
+    // Returns true if global setting has stored value as true
+    public static boolean isRttVisibilityOn(Context context) {
+        return (getRttVisibility(context) !=  QtiCallConstants.RTT_VISIBILITY_DISABLED);
     }
 
     // Returns value of RTT mode
@@ -524,10 +544,29 @@ public class QtiImsExtUtils {
                 Settings.Secure.RTT_CALLING_MODE, value ? 1 : 0);
     }
 
+    // Returns value of RTT visibility
+    public static int getRttVisibility(Context context) {
+        return (android.provider.Settings.Global.getInt(context.getContentResolver(),
+                QtiCallConstants.QTI_IMS_RTT_VISIBILITY, 0));
+    }
+
+    // Sets RTT visibility to global settings
+    public static void setRttVisibility(boolean value, Context context) {
+       android.provider.Settings.Global.putInt(context.getContentResolver(),
+                QtiCallConstants.QTI_IMS_RTT_VISIBILITY, value ?
+                        QtiCallConstants.RTT_VISIBILITY_ENABLED :
+                        QtiCallConstants.RTT_VISIBILITY_DISABLED);
+    }
+
     // Returns true if Carrier supports RTT
     public static boolean isRttSupported(int phoneId, Context context) {
-        return (isCarrierConfigEnabled(phoneId, context
-                , QtiCarrierConfigs.KEY_CARRIER_RTT_SUPPORTED));
+        boolean isRttSupported = false;
+        PersistableBundle b = getConfigForPhoneId(context, phoneId);
+        if (b != null) {
+            isRttSupported = b.getBoolean(
+                    CarrierConfigManager.KEY_RTT_SUPPORTED_BOOL);
+        }
+        return isRttSupported;
     }
 
     // Returns true if Carrier supports RTT auto upgrade
@@ -563,9 +602,32 @@ public class QtiImsExtUtils {
                 QtiCarrierConfigs.KEY_CARRIER_RTT_DOWNGRADE_SUPPORTED));
     }
 
+    // Returns true if Carrier support RTT visibility setting
+    // False otherwise
+    public static boolean shallShowRttVisibilitySetting(int phoneId, Context context) {
+        return (isCarrierConfigEnabled(phoneId, context,
+                QtiCarrierConfigs.KEY_SHOW_RTT_VISIBILITY_SETTING));
+    }
+
     // Returns true if Carrier supports Cancel Modify Call
     public static boolean isCancelModifyCallSupported(int phoneId, Context context) {
         return (isCarrierConfigEnabled(phoneId, context,
                 QtiCarrierConfigs.KEY_CARRIER_CANCEL_MODIFY_CALL_SUPPORTED));
+    }
+
+    // Supported for multi sim only. Allows user to enable or disable auto rejecting IMS MT calls
+    // when high priority data is on the other sub
+    public static void setAutoReject(ContentResolver contentResolver, int phoneId, boolean turnOn) {
+        final int value = turnOn ? QtiCallConstants.AUTO_REJECT_CALL_ENABLED :
+                QtiCallConstants.AUTO_REJECT_CALL_DISABLED;
+        android.provider.Settings.Global.putInt(contentResolver,
+                QtiCallConstants.IMS_AUTO_REJECT + phoneId, value);
+    }
+
+    // Supported for multi sim only. Default value is disabled
+    public static int getAutoReject(ContentResolver contentResolver, int phoneId) {
+        return android.provider.Settings.Global.getInt(contentResolver,
+                QtiCallConstants.IMS_AUTO_REJECT + phoneId,
+                QtiCallConstants.AUTO_REJECT_CALL_DISABLED);
     }
 }

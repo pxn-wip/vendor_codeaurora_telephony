@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2015, 2019 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -74,6 +74,9 @@ public class QtiCallConstants {
     /* Call fail code extra key name */
     public static final String EXTRAS_KEY_CALL_FAIL_EXTRA_CODE  = "CallFailExtraCode";
 
+    /* Emergency service category extra key name */
+    public static final String EXTRAS_KEY_EMERGENCY_SERVICE_CATEGORY  = "EmergencyServiceCategory";
+
     /*Key to check whether user can mark a call unwanted*/
     public static final String CAN_MARK_UNWANTED_CALL = "CanMarkUnwantedCall";
 
@@ -94,6 +97,8 @@ public class QtiCallConstants {
     public static final int CALL_FAIL_EXTRA_CODE_LOCAL_LOW_BATTERY =
             ImsReasonInfo.CODE_LOCAL_LOW_BATTERY;
 
+    /* call fail error code to retry ims call without rtt */
+    public static final int CODE_RETRY_ON_IMS_WITHOUT_RTT = 3001;
     /* Unknown disconnect cause */
     public static final int DISCONNECT_CAUSE_UNSPECIFIED = -1;
 
@@ -238,6 +243,13 @@ public class QtiCallConstants {
     public static final String EXTRA_PHONE_ID = "phoneId";
 
    /**
+     * Whether RTT visibility is on or off
+     * The value 1 - enable, 0 - disable
+     * This is set through ImsSettings UI
+     */
+    public static final String QTI_IMS_RTT_VISIBILITY = "rtt_mode_visibility";
+
+   /**
      * Property for RTT Operating mode
      * For TMO - 0 : Upon Request Mode (Disabled)
      *           1 : Automatic Mode (Full)
@@ -251,6 +263,12 @@ public class QtiCallConstants {
 
     // RTT On
     public static final int RTT_MODE_FULL = 1;
+
+   // RTT Visibility Off
+    public static final int RTT_VISIBILITY_DISABLED = 0;
+
+    // RTT Visibility On
+    public static final int RTT_VISIBILITY_ENABLED = 1;
 
    /**
      * Broadcast Action: Send RTT Text Message
@@ -285,5 +303,20 @@ public class QtiCallConstants {
     public static final int RTT_UPGRADE_REJECT = 3;
     // To request downgrade of RTT call to regular call
     public static final int RTT_DOWNGRADE_INITIATE = 4;
+
+    // Recorder Auto-Scaling Factor
+    public static final int RECORDER_SCALING_FACTOR = 8;
+
+    /**
+     * Whether auto reject is enabled for IMS calls on a sub when high priority data
+     * is on the other sub
+     * Type: int (0 for disabled, 1 for enabled)
+     */
+    public static final String IMS_AUTO_REJECT = "qti.settings.auto_reject";
+    // Auto reject call modes
+    public static final int AUTO_REJECT_CALL_DISABLED = 0;
+    public static final int AUTO_REJECT_CALL_ENABLED = 1;
+    // Auto reject call UI item, avoid conflicting values from ImsCallUtils.ConfigItem
+    public static final int AUTO_REJECT_CALL_MODE = 1000;
 }
 

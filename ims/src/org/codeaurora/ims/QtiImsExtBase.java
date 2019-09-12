@@ -1,4 +1,4 @@
-/* Copyright (c) 2016,2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016, 2017, 2019 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -27,11 +27,14 @@
  */
 package org.codeaurora.ims;
 
+import android.os.Bundle;
+import android.telephony.ims.feature.ImsFeature;
+
 import org.codeaurora.ims.internal.IQtiImsExt;
 import org.codeaurora.ims.internal.IQtiImsExtListener;
 import org.codeaurora.ims.internal.IImsMultiIdentityInterface;
+import org.codeaurora.ims.internal.IImsScreenShareController;
 import org.codeaurora.ims.QtiCallConstants;
-
 /**
  * Base implementation for IQtiImsExt.
  */
@@ -54,16 +57,6 @@ public abstract class QtiImsExtBase {
         public void getCallForwardUncondTimer(int phoneId, int reason, int serviceClass,
                 IQtiImsExtListener listener) {
             onGetCallForwardUncondTimer(phoneId, reason, serviceClass, listener);
-        }
-
-        @Override
-        public void getPacketCount(int phoneId, IQtiImsExtListener listener) {
-            onGetPacketCount(phoneId, listener);
-        }
-
-        @Override
-        public void getPacketErrorCount(int phoneId, IQtiImsExtListener listener) {
-            onGetPacketErrorCount(phoneId, listener);
         }
 
         @Override
@@ -120,6 +113,11 @@ public abstract class QtiImsExtBase {
         }
 
         @Override
+        public void setUssdInfoListener(int phoneId, IQtiImsExtListener listener) {
+            onSetUssdInfoListener(phoneId, listener);
+        }
+
+        @Override
         public int setRcsAppConfig(int phoneId, int defaultSmsApp) {
             return onSetRcsAppConfig(phoneId, defaultSmsApp);
         }
@@ -144,6 +142,21 @@ public abstract class QtiImsExtBase {
         public IImsMultiIdentityInterface getMultiIdentityInterface(int phoneId) {
             return onGetMultiIdentityInterface(phoneId);
         }
+
+        @Override
+        public IImsScreenShareController getScreenShareController(int phoneId) {
+            return onGetScreenShareController(phoneId);
+        }
+
+        @Override
+        public int getImsFeatureState(int phoneId) {
+            return onGetImsFeatureState(phoneId);
+        }
+
+        @Override
+        public void setAnswerExtras(int phoneId, Bundle extras) {
+            onSetAnswerExtras(phoneId, extras);
+        }
     };
 
     private QtiImsExtBinder mQtiImsExtBinder;
@@ -164,12 +177,6 @@ public abstract class QtiImsExtBase {
             IQtiImsExtListener listener) {
         // no-op
     }
-    protected void onGetPacketCount(int phoneId, IQtiImsExtListener listener) {
-        // no-op
-    }
-    protected void onGetPacketErrorCount(int phoneId, IQtiImsExtListener listener) {
-        // no-op
-    }
     protected void onResumePendingCall(int phoneId, int videoState) {
         // no-op
     }
@@ -179,6 +186,10 @@ public abstract class QtiImsExtBase {
     }
 
     protected void onSendCancelModifyCall(int phoneId, IQtiImsExtListener listener) {
+        // no-op
+    }
+
+    protected void onSetUssdInfoListener(int phoneId, IQtiImsExtListener listener) {
         // no-op
     }
 
@@ -227,5 +238,16 @@ public abstract class QtiImsExtBase {
     protected IImsMultiIdentityInterface onGetMultiIdentityInterface(int phoneId) {
         // no-op
         return null;
+    }
+    protected IImsScreenShareController onGetScreenShareController(int phoneId) {
+        // no-op
+        return null;
+    }
+    protected int onGetImsFeatureState(int phoneId) {
+        // no-op
+        return ImsFeature.STATE_UNAVAILABLE; //DUMMY VALUE
+    }
+    protected void onSetAnswerExtras(int phoneId, Bundle extras) {
+        // no-op
     }
 }

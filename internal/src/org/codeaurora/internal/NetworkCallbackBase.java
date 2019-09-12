@@ -60,14 +60,6 @@ public class NetworkCallbackBase extends INetworkCallback.Stub {
     }
 
     @Override
-    public void onSignalStrength(int slotId, Token token, Status status, SignalStrength
-            signalStrength) throws RemoteException {
-        Log.d(TAG,
-                "onSignalStrength: slotId = " + slotId + " token = " + token + " " + "status"
-                        + status + " signalStrength = " + signalStrength);
-    }
-
-    @Override
     public void onAnyNrBearerAllocation(int slotId, Token token, Status status,
             BearerAllocationStatus bearerStatus) throws RemoteException {
         Log.d(TAG,
@@ -76,11 +68,19 @@ public class NetworkCallbackBase extends INetworkCallback.Stub {
     }
 
     @Override
+    public void onSignalStrength(int slotId, Token token, Status status, SignalStrength
+            signalStrength) throws RemoteException {
+        Log.d(TAG,
+                "onSignalStrength: slotId = " + slotId + " token = " + token + " " + "status"
+                        + status + " signalStrength = " + signalStrength);
+    }
+
+    @Override
     public void onUpperLayerIndInfo(int slotId, Token token, Status status,
             UpperLayerIndInfo uilInfo) throws RemoteException {
         Log.d(TAG,
                 "onUpperLayerIndInfo: slotId = " + slotId + " token = " + token + " " +
-                        "status" + status + " UpperLayerIndInfo = " + uilInfo);
+                "status" + status + " UpperLayerIndInfo = " + uilInfo);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class NetworkCallbackBase extends INetworkCallback.Stub {
             nrConfigType) throws RemoteException {
         Log.d(TAG,
                 "on5gConfigInfo: slotId = " + slotId + " token = " + token + " " + "status"
-                        + status + " NrConfigType = " + nrConfigType);
+                + status + " NrConfigType = " + nrConfigType);
     }
 
     @Override
@@ -97,6 +97,22 @@ public class NetworkCallbackBase extends INetworkCallback.Stub {
         Log.d(TAG,
                 "onNrIconType: slotId = " + slotId + " token = " + token + " " + "status"
                         + status + " NrIconType = " + nrIconType);
+    }
+
+    @Override
+    public void onEnableEndc(int slotId, Token token, Status status) throws
+            RemoteException {
+        Log.d(TAG,
+                "onEnableEndc: slotId = " + slotId + " token = " + token + " " + "status" +
+                        status);
+    }
+
+    @Override
+    public void onEndcStatus(int slotId, Token token, Status status, boolean enableStatus) throws
+            RemoteException {
+        Log.d(TAG,
+                "onEndcStatus: slotId = " + slotId + " token = " + token + " " + "status" +
+                        status + " enableStatus = " + enableStatus);
     }
 
 }
