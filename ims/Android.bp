@@ -1,6 +1,7 @@
 
 java_library {
     name: "ims-ext-common",
+    owner: "qcom",
     installable: true,
 
     aidl: {
