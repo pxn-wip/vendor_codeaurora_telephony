@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(call all-java-files-under, src/org)
 LOCAL_PRODUCT_MODULE := true
 LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_OWNER := qcom
 
 LOCAL_MODULE := qti-telephony-utils
 
@@ -17,6 +18,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := qti_telephony_utils.xml
 
 LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_OWNER := qcom
 
 LOCAL_MODULE_CLASS := ETC
 

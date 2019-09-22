@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := qti-telephony-hidl-wrapper
+LOCAL_MODULE_OWNER := qcom
 LOCAL_PRODUCT_MODULE := true
 
 LOCAL_STATIC_JAVA_LIBRARIES := android.hidl.base-V1.0-java android.hidl.manager-V1.0-java
@@ -17,6 +18,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := qti_telephony_hidl_wrapper.xml
 
 LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_OWNER := qcom
 
 LOCAL_MODULE_CLASS := ETC
 
