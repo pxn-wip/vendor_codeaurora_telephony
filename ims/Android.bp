@@ -22,6 +22,7 @@ java_library {
 prebuilt_etc {
     name: "ims_ext_common.xml",
     src: "ims_ext_common.xml",
+    owner: "qcom",
     sub_dir: "permissions",
     product_specific: true,
 }
